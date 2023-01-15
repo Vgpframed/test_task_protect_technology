@@ -1,0 +1,11 @@
+db:
+  xhost: "127.0.0.1"
+  xport: "5432"
+  xuser: "postgres"
+  xpassword: "chiken123"
+  xdbname: "DB"
+
+base_config:
+  time_to_live: 30
+  jaeger_endpoint: ":14268"
+  http_port: "7001"
