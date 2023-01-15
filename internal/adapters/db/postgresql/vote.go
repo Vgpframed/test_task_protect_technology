@@ -2,7 +2,6 @@ package postgresql
 
 import (
 	"beta/internal/config"
-	"beta/internal/domain/models"
 	"context"
 	"fmt"
 	"github.com/opentracing/opentracing-go"
@@ -41,36 +40,45 @@ func NewVoteStorage(newTracer opentracing.Tracer, newLogger lg.Factory, cfg *con
 }
 
 // AddVote -
-func (v *VoteStorage) AddVote(ctx context.Context, vote models.RequestVote) (err error) {
+func (v *VoteStorage) AddVote(ctx context.Context, vote RequestVote) (err error) {
 	tx := v.DBClient.WithContext(ctx)
-	res := tx.Table("votes.vote").Create(&vote)
+	defer ctx.Done()
+
+	res := tx.Table(vote.getTableName()).Create(&vote)
 	if res.Error != nil {
+		err = res.Error
 		v.Logger.For(ctx).Error("db request AddVote", zap.Error(res.Error))
-		return res.Error
+		return
 	}
 
 	return nil
 }
 
 // GetVote -
-func (v *VoteStorage) GetVote(ctx context.Context, vote models.RequestVote) (err error) {
+func (v *VoteStorage) GetVote(ctx context.Context, vote RequestVote) (err error) {
 	tx := v.DBClient.WithContext(ctx)
-	res := tx.Table("votes.vote")
+	defer ctx.Done()
+
+	res := tx.Table(vote.getTableName())
 	if res.Error != nil {
+		err = res.Error
 		v.Logger.For(ctx).Error("db request GetVote", zap.Error(res.Error))
-		return res.Error
+		return
 	}
 	return nil
 }
 
 // UpdateVote -
-func (v *VoteStorage) UpdateVote(ctx context.Context, vote models.RequestVote) (err error) {
+func (v *VoteStorage) UpdateVote(ctx context.Context, vote RequestVote) (err error) {
 	tx := v.DBClient.WithContext(ctx)
-	res := tx.Table("votes.vote")
+	defer ctx.Done()
+
+	res := tx.Table(vote.getTableName())
 	if res.Error != nil {
+		err = res.Error
 		v.Logger.For(ctx).Error("db request UpdateVote", zap.Error(res.Error))
-		return res.Error
+		return
 	}
 
-	return nil
+	return
 }
