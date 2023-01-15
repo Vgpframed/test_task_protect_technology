@@ -8,6 +8,7 @@ type RequestVote struct {
 	CreatedAt int64
 }
 
+// getTableName - получение имени таблицы
 func (r RequestVote) getTableName() string {
 	return "vote.votes"
 }

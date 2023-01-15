@@ -4,6 +4,7 @@ import (
 	"beta/internal/adapters/db/postgresql"
 	"beta/internal/config"
 	http_v1 "beta/internal/controller/http/v1"
+	vote_service "beta/internal/domain/service"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -36,31 +37,31 @@ func main() {
 	newLogger.Bg().Info("Server configuration", zap.Any("Config", cfg))
 
 	tracer := tracing.Init(serviceName, metricsFactory, newLogger, cfg.BaseConfig.JaegerEndpoint)
+
 	start(tracer, newLogger, *cfg)
 }
 
 func start(tracer opentracing.Tracer, logger lg.Factory, cfg config.Config) {
-	pg, err := postgresql.NewVoteStorage(tracer, logger, &cfg)
-	srv := http_v1.Server{
-		Db: pg,
-	}
 
-	if  err != nil {
+	pg, err := postgresql.NewVoteStorage(tracer, logger, &cfg)
+
+	if err != nil {
 		logger.Bg().Fatal("shutdown", zap.Error(err))
 	}
 
+	_ = vote_service.NewServer(pg)
 	logger.Bg().Info("Start setting http server")
 	router := gin.Default()
-	router.POST("/voting", srv.PostVote)
+	router.POST("/voting", http_v1.PostVote)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	var wg sync.WaitGroup
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s",cfg.BaseConfig.HttpPort),
+		Addr: fmt.Sprintf(":%s", cfg.BaseConfig.HttpPort),
 	}
 	wg.Add(2)
-	go func () {
+	go func() {
 		defer wg.Done()
 		logger.Bg().Info("Start listening gateway of server")
 
@@ -68,7 +69,7 @@ func start(tracer opentracing.Tracer, logger lg.Factory, cfg config.Config) {
 			logger.Bg().Fatal("shutdown", zap.Error(err))
 		}
 	}()
-	go func () {
+	go func() {
 		defer wg.Done()
 		<-ctx.Done()
 		logger.Bg().Info("Closing HTTP Server")
@@ -79,5 +80,3 @@ func start(tracer opentracing.Tracer, logger lg.Factory, cfg config.Config) {
 	wg.Wait()
 	logger.Bg().Info("I'm leaving, bye!")
 }
-
-

@@ -9,3 +9,4 @@ base_config:
   time_to_live: 30
   jaeger_endpoint: ":14268"
   http_port: "7001"
+  gamma_endpoint: "http://service-gamma/"

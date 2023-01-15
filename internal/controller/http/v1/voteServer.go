@@ -1,18 +1,15 @@
 package http_v1
 
 import (
-	"beta/internal/adapters/db/postgresql"
 	"beta/internal/domain/models"
+	vote_service "beta/internal/domain/service"
+	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type Server struct {
-	Db postgresql.VoteStorage
-}
-
 // PostVote adds a vote from JSON received in the request body.
-func (s *Server) PostVote(c *gin.Context) {
+func PostVote(c *gin.Context) {
 	var newVote models.RequestVote
 
 	// Call BindJSON to bind the received JSON to
@@ -20,6 +17,9 @@ func (s *Server) PostVote(c *gin.Context) {
 		return
 	}
 
+	go vote_service.AddVote(context.Background(), newVote)
+
 	var responseOutside = models.Response{Result: "ok"}
+
 	c.IndentedJSON(http.StatusOK, responseOutside)
 }

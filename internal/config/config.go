@@ -20,6 +20,7 @@ type Config struct {
 		Time           string `yaml:"time_to_live"`
 		HttpPort       string `yaml:"http_port"`
 		JaegerEndpoint string `yaml:"jaeger_endpoint"`
+		GammaEndpoint  string `yaml:"gamma_endpoint"`
 	} `yaml:"base_config"`
 }
 
