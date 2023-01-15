@@ -15,8 +15,6 @@ type Response struct {
 
 // SendVote - входная структура для сервиса gamma
 type SendVote struct {
-	VoteId   string `json:"voteId"`
-	VotingId string `json:"votingId"`
 	OptionId string `json:"optionId"`
-	Count    int64  `yaml:"count"`
+	Count    int64  `json:"count"`
 }

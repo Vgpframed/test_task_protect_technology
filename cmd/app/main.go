@@ -6,6 +6,7 @@ import (
 	http_v1 "beta/internal/controller/http/v1"
 	vote_service "beta/internal/domain/service"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
@@ -49,7 +50,10 @@ func start(tracer opentracing.Tracer, logger lg.Factory, cfg config.Config) {
 		logger.Bg().Fatal("shutdown", zap.Error(err))
 	}
 
-	_ = vote_service.NewServer(pg)
+	serv := vote_service.NewServer(pg, logger, cfg)
+	if serv == nil {
+		logger.Bg().Fatal("shutdown", zap.Error(errors.New("Nil deference pointer in the serv")))
+	}
 	logger.Bg().Info("Start setting http server")
 	router := gin.Default()
 	router.POST("/voting", http_v1.PostVote)

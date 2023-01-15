@@ -17,7 +17,7 @@ func PostVote(c *gin.Context) {
 		return
 	}
 
-	go vote_service.AddVote(context.Background(), newVote)
+	go vote_service.GService.AddVote(context.Background(), newVote)
 
 	var responseOutside = models.Response{Result: "ok"}
 

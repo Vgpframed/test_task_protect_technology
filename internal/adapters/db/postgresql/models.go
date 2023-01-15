@@ -12,3 +12,9 @@ type RequestVote struct {
 func (r RequestVote) getTableName() string {
 	return "vote.votes"
 }
+
+// SendVote - входная структура для сервиса gamma
+type SendVote struct {
+	OptionId string `json:"optionId"`
+	Cnt      int64  `json:"count"`
+}

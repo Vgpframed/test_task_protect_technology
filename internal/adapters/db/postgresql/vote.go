@@ -58,11 +58,11 @@ func (v VoteStorage) AddVote(ctx context.Context, vote RequestVote) (err error) 
 }
 
 // GetVote -
-func (v VoteStorage) GetVote(ctx context.Context, vote RequestVote) (err error) {
+func (v VoteStorage) GetVote(ctx context.Context, vote RequestVote) (newvote RequestVote, err error) {
 	tx := v.DBClient.WithContext(ctx)
 	defer ctx.Done()
 
-	res := tx.Table(vote.getTableName())
+	res := tx.Table(vote.getTableName()).Where("vote_id = ? and voting_id = ? ", vote.VoteId, vote.VotingId).Scan(&newvote)
 	if res.Error != nil {
 		err = res.Error
 		v.Logger.For(ctx).Error("db request GetVote", zap.Error(res.Error))
@@ -77,6 +77,23 @@ func (v VoteStorage) UpdateVote(ctx context.Context, vote RequestVote) (err erro
 	defer ctx.Done()
 
 	res := tx.Table(vote.getTableName()).Where("vote_id = ? and voting_id = ?", vote.VoteId, vote.VotingId).Update("option_id", vote.OptionId)
+	if res.Error != nil {
+		err = res.Error
+		v.Logger.For(ctx).Error("db request UpdateVote", zap.Error(res.Error))
+		return
+	}
+
+	return
+}
+
+// GetAllVotes -
+func (v VoteStorage) GetAllVotes(ctx context.Context) (votes []SendVote, err error) {
+	tx := v.DBClient.WithContext(ctx)
+	defer ctx.Done()
+
+	var vote RequestVote
+
+	res := tx.Table(vote.getTableName()).Select("option_id, count(vote_id) cnt").Group("option_id").Scan(&votes)
 	if res.Error != nil {
 		err = res.Error
 		v.Logger.For(ctx).Error("db request UpdateVote", zap.Error(res.Error))
