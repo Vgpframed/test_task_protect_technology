@@ -1,8 +1,8 @@
 package config
 
 import (
+	lg "beta/internal/domain/logger"
 	"github.com/ilyakaznacheev/cleanenv"
-	lg "gitlab.satel.eyevox.ru/satel_vks/jaeger_tracer/log"
 	"log"
 	"sync"
 )
@@ -17,7 +17,6 @@ type Config struct {
 	} `yaml:"db" env-prefix:"DB"`
 
 	BaseConfig struct {
-		Time           string `yaml:"time_to_live"`
 		HttpPort       string `yaml:"http_port"`
 		JaegerEndpoint string `yaml:"jaeger_endpoint"`
 		GammaEndpoint  string `yaml:"gamma_endpoint"`

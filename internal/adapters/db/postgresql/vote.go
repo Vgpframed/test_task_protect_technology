@@ -2,10 +2,10 @@ package postgresql
 
 import (
 	"beta/internal/config"
+	lg "beta/internal/domain/logger"
 	"context"
 	"fmt"
 	"github.com/opentracing/opentracing-go"
-	lg "gitlab.satel.eyevox.ru/satel_vks/jaeger_tracer/log"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

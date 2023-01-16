@@ -1,11 +1,11 @@
 package gamma
 
 import (
+	lg "beta/internal/domain/logger"
 	"beta/internal/domain/models"
 	"bytes"
 	"encoding/json"
 	"fmt"
-	lg "gitlab.satel.eyevox.ru/satel_vks/jaeger_tracer/log"
 	"go.uber.org/zap"
 	"net/http"
 )

@@ -1,0 +1,31 @@
+version: '3'
+services:
+    db:
+      image: postgres:14.1-alpine
+      restart: always
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DATABASE=DB
+      ports:
+        - '5432:5432'
+      volumes:
+        - db:/var/lib/postgresql/data
+
+  beta:
+    build: .
+    depends_on:
+      - db
+    container_name: beta-service
+    restart: always
+    ports:
+      - "7000:7001"
+    environment:
+     DB_XHOST: db
+     DB_XUSER: "postgres"
+     DB_XPASSWORD: "postgres"
+     DB_XDBNAME: "DB"
+     DB_XPORT: "5432"
+     HTTPPORT: "7001"
+     JAEGER_ENDPOINT: ":14268"
+     GAMMA_ENDPOINT: "http://service-gamma/"

@@ -3,10 +3,10 @@ package vote_service
 import (
 	"beta/internal/adapters/db/postgresql"
 	cfg "beta/internal/config"
+	lg "beta/internal/domain/logger"
 	"beta/internal/domain/models"
 	"beta/internal/domain/usecase/gamma"
 	"context"
-	lg "gitlab.satel.eyevox.ru/satel_vks/jaeger_tracer/log"
 	"time"
 )
 
